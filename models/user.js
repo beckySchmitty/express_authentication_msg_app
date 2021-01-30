@@ -25,7 +25,7 @@ class User {
 
   /** Authenticate: is this username/password valid? Returns boolean. */
   static async authenticate(username, password) { 
-    const results = await db.query(`SELECT * FROM user WHERE username=$1`, [username]);
+    const results = await db.query(`SELECT * FROM users WHERE username=$1`, [username]);
     const user = results.rows[0];
 
     if (!user) {
@@ -38,7 +38,7 @@ class User {
   /** Update last_login_at for user */
   static async updateLoginTimestamp(username) {
     const results = await db.query(`UPDATE users
-    SET last_login = current_timestamp 
+    SET last_login_at = current_timestamp 
     WHERE username=$1
     RETURNING username`, [username]);
 
@@ -51,7 +51,7 @@ class User {
   /** All: basic info on all users:
    * [{username, first_name, last_name, phone}, ...] */
   static async all() { 
-    const results = await db.query(`SELECT username, first_name, last_name, phone, 
+    const results = await db.query(`SELECT username, first_name, last_name, phone 
     FROM users
     ORDER BY username`)
     return results.rows;
@@ -69,12 +69,12 @@ class User {
     const results = await db.query(`SELECT username, first_name, last_name, phone, join_at, last_login_at
     FROM users
     WHERE username=$1`, [username])
-    const user = results.rows[0];
+    // const user = results.rows[0];
 
-    if (!user) {
+    if (!results.rows[0]) {
       throw new ExpressError(`User with username ${username} not found`, 404)
     }
-    return user;
+    return results.rows[0];
    }
 
   /** Return messages from this user.
@@ -96,16 +96,16 @@ class User {
               m.read_at
         FROM messages AS m
         JOIN users AS u ON m.to_username = u.username
-        WHERE u.username = $1`,
+        WHERE from_username = $1`,
       [username]);
 
   return result.rows.map(m => ({
     id: m.id,
     to_user: {
       username: m.to_username,
-      first_name: u.first_name,
-      last_name: u.last_name,
-      phone: u.phone,
+      first_name: m.first_name,
+      last_name: m.last_name,
+      phone: m.phone,
     },
     body: m.body,
     sent_at: m.sent_at,
