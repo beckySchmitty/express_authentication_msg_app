@@ -1,3 +1,21 @@
+const express = require("express");
+const router = new express.Router();
+const ExpressError = require("../expressError");
+const db = require("../db");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { BCRYPT_WORK_FACTOR, SECRET_KEY } = require("../config");
+
+const {   authenticateJWT,
+    ensureLoggedIn,
+    ensureCorrectUser } = require("../middleware/auth");
+
+
+
+router.get('/hi', (req, res, next) => {
+    res.send("APP IS WORKING!!!")
+  })
+
 /** POST /login - login: {username, password} => {token}
  *
  * Make sure to update their last-login!
@@ -11,3 +29,5 @@
  *
  *  Make sure to update their last-login!
  */
+
+ module.exports = router;
