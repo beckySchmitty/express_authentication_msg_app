@@ -7,8 +7,9 @@ const jwt = require("jsonwebtoken");
 const { BCRYPT_WORK_FACTOR, SECRET_KEY } = require("../config");
 const {   authenticateJWT,
     ensureLoggedIn,
-    ensureCorrectUser } = require("../middleware/auth")
-router.get('/', (req, res, next) => {
+    ensureCorrectUser } = require("../middleware/auth");
+const User = require("../models/user");
+router.get('/home', (req, res, next) => {
   res.send("APP IS WORKING!!!")
 })
 
@@ -17,6 +18,14 @@ router.get('/', (req, res, next) => {
  * => {users: [{username, first_name, last_name, phone}, ...]}
  *
  **/
+router.get('/', authenticateJWT, async (req, res, next) => {
+  try {
+    const users = await User.all();
+    return res.json({users})
+  } catch(e) {
+    return next(e)
+  }
+})
 
 
 /** GET /:username - get detail of users.
