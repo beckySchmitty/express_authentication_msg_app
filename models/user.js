@@ -43,14 +43,19 @@ class User {
     RETURNING username`, [username]);
 
     if (!results.rows[0]) {
-      throw new ExpressError(`User with username ${username} not found`, 401)
+      throw new ExpressError(`User with username ${username} not found`, 404)
     }
 
    }
 
   /** All: basic info on all users:
    * [{username, first_name, last_name, phone}, ...] */
-  static async all() { }
+  static async all() { 
+    const results = await db.query(`SELECT username, first_name, last_name, phone, 
+    FROM users
+    ORDER BY username`)
+    return results.rows;
+  }
 
   /** Get: get user by username
    *
@@ -60,7 +65,17 @@ class User {
    *          phone,
    *          join_at,
    *          last_login_at } */
-  static async get(username) { }
+  static async get(username) {
+    const results = await db.query(`SELECT username, first_name, last_name, phone, join_at, last_login_at
+    FROM users
+    WHERE username=$1`, [username])
+    const user = results.rows[0];
+
+    if (!user) {
+      throw new ExpressError(`User with username ${username} not found`, 404)
+    }
+    return user;
+   }
 
   /** Return messages from this user.
    *
@@ -69,7 +84,35 @@ class User {
    * where to_user is
    *   {username, first_name, last_name, phone}
    */
-  static async messagesFrom(username) { }
+  static async messagesFrom(username) {
+    const result = await db.query(
+      `SELECT m.id,
+              m.to_username,
+              u.first_name,
+              u.last_name,
+              u.phone,
+              m.body,
+              m.sent_at,
+              m.read_at
+        FROM messages AS m
+        JOIN users AS u ON m.to_username = u.username
+        WHERE u.username = $1`,
+      [username]);
+
+  return result.rows.map(m => ({
+    id: m.id,
+    to_user: {
+      username: m.to_username,
+      first_name: u.first_name,
+      last_name: u.last_name,
+      phone: u.phone,
+    },
+    body: m.body,
+    sent_at: m.sent_at,
+    read_at: m.read_at,
+  }));
+
+}
 
   /** Return messages to this user.
    *
