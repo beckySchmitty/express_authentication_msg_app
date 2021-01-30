@@ -21,3 +21,4 @@ CREATE TABLE messages (
     read_at timestamp with time zone
 );
 \q
+
