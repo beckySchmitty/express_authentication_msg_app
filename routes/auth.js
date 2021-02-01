@@ -9,11 +9,7 @@ router.get('/hi', (req, res, next) => {
     res.send("APP IS WORKING!!!")
   })
 
-/** POST /login - login: {username, password} => {token}
- *
- * Make sure to update their last-login!
- *
- **/
+/** POST /login - login: {username, password} => {token} **/
 router.post('/login', async (req, res, next) => {
   try {
     let {username, password} = req.body;
@@ -30,11 +26,7 @@ router.post('/login', async (req, res, next) => {
 
 
 /** POST /register - register user: registers, logs in, and returns token.
- *
- * {username, password, first_name, last_name, phone} => {token}.
- *
- *  Make sure to update their last-login!
- */
+ *{username, password, first_name, last_name, phone} => {token}.*/
 router.post('/register', async (req, res, next) => {
   try {
     let {username, password, first_name, last_name, phone} = req.body;
