@@ -20,7 +20,8 @@ getAllUsersBtn.addEventListener("click", async function() {
 
     for (let i=0; i< users.length; i++) {
         let li = document.createElement('li');
-        li.innerText = `${JSON.stringify(users[i].username)} x`
+        // li.innerText = `${JSON.stringify(users[i].username)} x`
+        li.innerText = `${JSON.stringify(users[i])} x`
         allUsersUl.append(li)
     }
 
